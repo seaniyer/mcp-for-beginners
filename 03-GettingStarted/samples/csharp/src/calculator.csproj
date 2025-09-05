@@ -1,14 +1,31 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    
+    <!-- NuGet Package Properties -->
+    <PackageId>McpCalculatorTools</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>MCP Community</Authors>
+    <Company>MCP for Beginners</Company>
+    <Description>A collection of calculator tools for Model Context Protocol (MCP) servers. Provides basic arithmetic operations (add, subtract, multiply, divide) and prime number validation as MCP tools.</Description>
+    <PackageTags>mcp;model-context-protocol;calculator;arithmetic;tools</PackageTags>
+    <PackageProjectUrl>https://github.com/seaniyer/mcp-for-beginners</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/seaniyer/mcp-for-beginners</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
-    <ItemGroup>
-      <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.*" />
-      <PackageReference Include="ModelContextProtocol" Version="0.*-*" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.*" />
+    <PackageReference Include="ModelContextProtocol" Version="0.*-*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
 </Project>
