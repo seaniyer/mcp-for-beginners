@@ -32,6 +32,8 @@ Follow these steps to get started using these resources:
 
 The **Model Context Protocol (MCP)** is a cutting-edge framework designed to standardize interactions between AI models and client applications. This open-source curriculum offers a structured learning path, complete with practical coding examples and real-world use cases, across popular programming languages including C#, Java, JavaScript, TypeScript, and Python.
 
+**📦 NuGet Package Support**: MCP servers can now be packaged and distributed as NuGet packages, making deployment and sharing easier than ever. Our C# samples demonstrate how to create installable MCP server tools using NuGet.
+
 Whether you're an AI developer, system architect, or software engineer, this guide is your comprehensive resource for mastering MCP fundamentals and implementation strategies.
 
 ## 🔗 Official MCP Resources
@@ -119,7 +121,7 @@ If you’re a developer, tool builder, or AI product strategist, this day is pac
 
 | Language | Description | Link |
 |----------|-------------|------|
-| C# | MCP Server Example | [View Code](./03-GettingStarted/samples/csharp/README.md) |
+| C# | MCP Server Example (includes NuGet packaging) | [View Code](./03-GettingStarted/samples/csharp/README.md) |
 | Java | MCP Calculator | [View Code](./03-GettingStarted/samples/java/calculator/README.md) |
 | JavaScript | MCP Demo | [View Code](./03-GettingStarted/samples/javascript/README.md) |
 | Python | MCP Server | [View Code](./03-GettingStarted/samples/python/mcp_calculator_server.py) |
@@ -134,6 +136,31 @@ If you’re a developer, tool builder, or AI product strategist, this day is pac
 | JavaScript | Advanced Sample | [View Code](./04-PracticalImplementation/samples/javascript/README.md) |
 | Python | Complex Implementation | [View Code](./04-PracticalImplementation/samples/python/mcp_sample.py) |
 | TypeScript | Container Sample | [View Code](./04-PracticalImplementation/samples/typescript/README.md) |
+
+### 📦 NuGet Package Distribution
+
+MCP servers can be packaged and distributed as NuGet packages for easy installation and deployment. This is particularly useful for .NET developers who want to share MCP servers as tools.
+
+#### Installing MCP Servers from NuGet
+
+Once an MCP server is packaged as a NuGet tool, users can install it globally using:
+
+```bash
+dotnet tool install -g YourMcpServerPackageId
+```
+
+#### Creating NuGet Packages for MCP Servers
+
+The C# samples in this repository demonstrate how to configure your MCP server for NuGet packaging using these key properties in your `.csproj` file:
+
+```xml
+<PackAsTool>true</PackAsTool>
+<PackageType>McpServer</PackageType>
+<PackageId>YourMcpServerName</PackageId>
+<PackageVersion>1.0.0</PackageVersion>
+```
+
+For a complete example, see the [C# Calculator Sample](./03-GettingStarted/samples/csharp/src/calculator.csproj) which includes full NuGet packaging configuration.
 
 
 ## 🎯 Prerequisites for Learning MCP
