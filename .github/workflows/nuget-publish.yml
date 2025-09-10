@@ -63,44 +63,44 @@ jobs:
           name: nuget-package
           path: ./artifacts/*.nupkg
 
-  publish-github:
-    runs-on: ubuntu-latest
-    needs: build-and-test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+  # publish-github:
+  #   runs-on: ubuntu-latest
+  #   needs: build-and-test
+  #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
-    permissions:
-      packages: write
-      contents: read
+  #   permissions:
+  #     packages: write
+  #     contents: read
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
+  #     - name: Setup .NET
+  #       uses: actions/setup-dotnet@v4
+  #       with:
+  #         dotnet-version: '8.0.x'
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: nuget-package
-          path: ./artifacts
+  #     - name: Download build artifacts
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: nuget-package
+  #         path: ./artifacts
 
-      - name: Publish to GitHub Packages
-        run: |
-          OWNER="${{ github.repository_owner }}"
-          PACKAGES_URL="https://nuget.pkg.github.com/$OWNER/index.json"
-          dotnet nuget add source \
-            --username ${{ github.actor }} \
-            --password ${{ secrets.GITHUB_TOKEN }} \
-            --store-password-in-clear-text \
-            --name github \
-            "$PACKAGES_URL"
-          dotnet nuget push "./artifacts/*.nupkg" \
-            --source "github" \
-            --api-key ${{ secrets.GITHUB_TOKEN }} \
-            --skip-duplicate
+  #     - name: Publish to GitHub Packages
+  #       run: |
+  #         OWNER="${{ github.repository_owner }}"
+  #         PACKAGES_URL="https://nuget.pkg.github.com/$OWNER/index.json"
+  #         dotnet nuget add source \
+  #           --username ${{ github.actor }} \
+  #           --password ${{ secrets.GITHUB_TOKEN }} \
+  #           --store-password-in-clear-text \
+  #           --name github \
+  #           "$PACKAGES_URL"
+  #         dotnet nuget push "./artifacts/*.nupkg" \
+  #           --source "github" \
+  #           --api-key ${{ secrets.GITHUB_TOKEN }} \
+  #           --skip-duplicate
 
   publish-nuget:
     runs-on: ubuntu-latest
