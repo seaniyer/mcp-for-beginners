@@ -27,13 +27,27 @@ This GitHub Actions workflow automatically builds and publishes the McpCalculato
 ### 3. Publish to NuGet.org (`publish-nuget`)
 - Runs only on GitHub releases
 - Downloads build artifacts
-- Publishes package to public NuGet.org (requires NUGET_API_KEY secret)
+- Publishes package to public NuGet.org using OIDC authentication (no API key required)
 
-## Required Secrets
+## Setup Requirements
 
-To publish to NuGet.org, add the following secret to your repository:
+### For NuGet.org Publishing
 
-- `NUGET_API_KEY`: Your NuGet.org API key
+To publish to NuGet.org using OIDC tokens, you need to set up trusted publishing:
+
+1. **Sign in to NuGet.org** and navigate to your account settings
+2. **Go to "Trusted publishers"** at https://www.nuget.org/account/trustedpublishing
+3. **Add a trusted publisher** with the following details:
+   - **Repository**: `seaniyer/mcp-for-beginners`
+   - **Workflow**: `.github/workflows/nuget-publish.yml`
+   - **Package**: `McpCalculatorTools`
+4. **Create a GitHub release** to trigger the publishing workflow
+
+This eliminates the need for storing API keys as secrets and provides more secure authentication using GitHub's OIDC tokens.
+
+### For GitHub Packages
+
+No additional setup is required - the workflow uses the built-in `GITHUB_TOKEN` for authentication.
 
 ## Package Information
 

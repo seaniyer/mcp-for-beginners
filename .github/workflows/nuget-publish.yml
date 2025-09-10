@@ -107,6 +107,10 @@ jobs:
     needs: build-and-test
     if: github.event_name == 'release' && github.event.action == 'published'
 
+    permissions:
+      id-token: write
+      contents: read
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -123,9 +127,8 @@ jobs:
           path: ./artifacts
 
       - name: Publish to NuGet.org
-        if: secrets.NUGET_API_KEY != ''
         run: |
           dotnet nuget push "./artifacts/*.nupkg" \
             --source https://api.nuget.org/v3/index.json \
-            --api-key ${{ secrets.NUGET_API_KEY }} \
+            --oidc \
             --skip-duplicate
