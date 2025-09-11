@@ -132,7 +132,7 @@ jobs:
           name: nuget-package
           path: ./artifacts
       
-      - name: login
+      - name: NuGet login (OIDC → temp API key)
         uses: NuGet/login@v1
         id: login
         with:
