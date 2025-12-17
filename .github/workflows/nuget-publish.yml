@@ -1,0 +1,142 @@
+---
+name: Build and Publish NuGet Package
+
+"on":
+  push:
+    branches:
+      - main
+    paths:
+      - '03-GettingStarted/samples/csharp/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '03-GettingStarted/samples/csharp/**'
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      publish_to_nuget:
+        description: 'Publish to NuGet.org'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: >
+          dotnet restore
+          03-GettingStarted/samples/csharp/src/calculator.csproj
+
+      - name: Build
+        run: >
+          dotnet build
+          03-GettingStarted/samples/csharp/src/calculator.csproj
+          --no-restore --configuration Release
+
+      - name: Test (if tests exist)
+        run: |
+          if [ -d "03-GettingStarted/samples/csharp/tests" ]; then
+            dotnet test 03-GettingStarted/samples/csharp/tests \
+              --no-build --configuration Release
+          else
+            echo "No tests found, skipping test step"
+          fi
+
+      - name: Pack NuGet package
+        run: >
+          dotnet pack
+          03-GettingStarted/samples/csharp/src/calculator.csproj
+          --no-build --configuration Release --output ./artifacts
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-package
+          path: ./artifacts/*.nupkg
+
+  # publish-github:
+  #   runs-on: ubuntu-latest
+  #   needs: build-and-test
+  #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+  #   permissions:
+  #     packages: write
+  #     contents: read
+
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
+
+  #     - name: Setup .NET
+  #       uses: actions/setup-dotnet@v4
+  #       with:
+  #         dotnet-version: '8.0.x'
+
+  #     - name: Download build artifacts
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: nuget-package
+  #         path: ./artifacts
+
+  #     - name: Publish to GitHub Packages
+  #       run: |
+  #         OWNER="${{ github.repository_owner }}"
+  #         PACKAGES_URL="https://nuget.pkg.github.com/$OWNER/index.json"
+  #         dotnet nuget add source \
+  #           --username ${{ github.actor }} \
+  #           --password ${{ secrets.GITHUB_TOKEN }} \
+  #           --store-password-in-clear-text \
+  #           --name github \
+  #           "$PACKAGES_URL"
+  #         dotnet nuget push "./artifacts/*.nupkg" \
+  #           --source "github" \
+  #           --api-key ${{ secrets.GITHUB_TOKEN }} \
+  #           --skip-duplicate
+
+  publish-nuget:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    if: (github.event_name == 'release' && github.event.action == 'published') || (github.event_name == 'workflow_dispatch' && inputs.publish_to_nuget == true)
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-package
+          path: ./artifacts
+      
+      - name: NuGet login (OIDC → temp API key)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: ${{secrets.NUGET_USER}}
+
+      - name: Publish to NuGet.org
+        run: dotnet nuget push **/*.nupkg --api-key ${{ steps.login.outputs.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
